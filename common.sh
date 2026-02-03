@@ -7,7 +7,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-SCRIPT_DIR=$pwd  
+SCRIPT_DIR=$PWD 
 START_TIME=$(date +%s)
 $MONGODB_HOST=mongodb.siddharthais.online
 
