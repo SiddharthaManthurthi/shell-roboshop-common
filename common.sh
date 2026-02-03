@@ -7,7 +7,9 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+SCRIPT_DIR=$pwd  
 START_TIME=$(date +%s)
+$MONGODB_HOST=mongodb.siddharthais.online
 
 mkdir -p $LOGS_FOLDER
 
@@ -28,6 +30,59 @@ VALIDATE () {
     else
         echo -e "$(date "+%Y-%m-%d-%H:%M:%S") | $G $2 installation successful $N" | tee -a $LOGS_FILE
     fi
+}
+
+Nodjs_setup () {
+    dnf module disable nodejs -y &>> $LOGS_FILE
+    VALIDATE $? "Disabling NodeJS Module"
+
+    dnf module enable nodejs:20 -y &>> $LOGS_FILE
+    VALIDATE $? "Enabling NodeJS 20 Module"
+
+    dnf install nodejs -y &>> $LOGS_FILE
+    VALIDATE $? "Installing NodeJS 20"
+
+    npm install  &>> $LOGS_FILE
+    VALIDATE $? "Installing NodeJS Dependencies"
+}
+
+app_setup (){
+    id roboshop &>> $LOGS_FILE
+    if [ $? -ne 0 ]; then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>> $LOGS_FILE
+        VALIDATE $? "Adding sytem User"
+    else
+        echo -e "$Y roboshop user already exists, skipping $N" | tee -a $LOGS_FILE
+    fi
+    mkdir -p /app 
+    VALIDATE $? "Creating app directory"
+
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>> $LOGS_FILE
+    VALIDATE $? "Downloading $app_name App" 
+
+    cd /app
+    VALIDATE $? "Moving to app directory"
+
+    rm -rf /app/*
+    VALIDATE $? "Cleaning old code"
+
+    unzip /tmp/$app_name.zip &>> $LOGS_FILE
+    VALIDATE $? "Unzippping $app_name code"
+}
+
+sytemd_setup (){
+    cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
+    VALIDATE $? "Copying $app_name Service File"
+
+    systemctl daemon-reload &>> $LOGS_FILE
+    systemctl enable $app_name  &>> $LOGS_FILE
+    systemctl start $app_name &>> $LOGS_FILE
+    VALIDATE $? "Starting and enabling $app_name Service"
+} 
+
+app_restart (){
+    systemctl restart $app_name &>> $LOGS_FILE
+    VALIDATE $? "Restarting $app_name Service"
 }
 
 Print_total_time (){    
