@@ -72,17 +72,17 @@ app_setup (){
 
 sytemd_setup (){
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
-    VALIDATE $? "Copying $app_name Service File"
+    VALIDATE $? "Copying systemctl Service File"
 
-    systemctl daemon-reload &>> $LOGS_FILE
+    systemctl daemon-reload 
     systemctl enable $app_name  &>> $LOGS_FILE
-    systemctl start $app_name &>> $LOGS_FILE
-    VALIDATE $? "Starting and enabling $app_name Service"
+    systemctl start $app_name 
+    VALIDATE $? "Starting and enabling $app_name"
 } 
 
 app_restart (){
-    systemctl restart $app_name &>> $LOGS_FILE
-    VALIDATE $? "Restarting $app_name Service"
+    systemctl restart $app_name
+    VALIDATE $? "Restarting $app_name"
 }
 
 Print_total_time (){    
