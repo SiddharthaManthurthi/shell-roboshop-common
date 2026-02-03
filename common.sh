@@ -32,7 +32,7 @@ VALIDATE () {
     fi
 }
 
-Nodjs_setup () {
+nodejs_setup () {
     dnf module disable nodejs -y &>> $LOGS_FILE
     VALIDATE $? "Disabling NodeJS Module"
 
