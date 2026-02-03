@@ -17,4 +17,4 @@ VALIDATE $? "Allowing romote connections"
 systemctl restart mongod &>> $LOGS_FILE
 VALIDATE $? "Restarting MongoDB Service"
 
-Print_total_time ()
+Print_total_time
